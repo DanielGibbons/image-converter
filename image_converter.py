@@ -6,6 +6,9 @@ from PIL import Image
 import argparse
 
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+
 def calculate_pixel_value(red, green, blue, output_colour_space):
 
     if output_colour_space == "RGB565":
@@ -107,6 +110,9 @@ def write_data_to_file(filename, colour_space, data, image_width, image_height):
     # close source file
     fp.close()
 
+    # go back to script directory
+    os.chdir(script_dir)
+
 
 def main(filename, colour_space):
 
@@ -114,7 +120,8 @@ def main(filename, colour_space):
     if colour_space != "RGB565" and colour_space != "RGB888":
         sys.exit("Error: Invalid colour space")
 
-    image = Image.open(filename)
+    image = Image.open(os.path.join(script_dir, filename))
+
     image_buffer = numpy.array(image)
 
     data = convert_to_colour_space(image_buffer, colour_space)
@@ -129,8 +136,8 @@ if __name__ == "__main__":
     numpy.set_printoptions(threshold=numpy.inf)
 
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Converts a 24-Bit BMP to either RGB565 or RGB888 for use in embedded application')
-    parser.add_argument('filename', help='The 24-Bit BMP file to be converted')
+    parser = argparse.ArgumentParser(description='Converts an image to either RGB565 or RGB888 for use in an embedded application')
+    parser.add_argument('filename', help='The image file to be converted')
     parser.add_argument('colour_space', help='Desired output colour space - RGB565 or RGB888')
     args = parser.parse_args()
 
